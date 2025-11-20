@@ -1,0 +1,22 @@
+WARNING: Ignoring invalid distribution ~orch (/usr/local/lib/python3.12/dist-packages)
+WARNING: Ignoring invalid distribution ~orch (/usr/local/lib/python3.12/dist-packages)
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+torchaudio 2.8.0+cu126 requires torch==2.8.0, but you have torch 2.9.0 which is incompatible.
+---------------------------------------------------------------------------
+NotImplementedError                       Traceback (most recent call last)
+/tmp/ipython-input-2748441468.py in <cell line: 0>()
+      3 
+      4 from datasets import Dataset
+----> 5 from unsloth import FastLanguageModel
+      6 
+      7 
+
+3 frames
+/usr/local/lib/python3.12/dist-packages/unsloth_zoo/device_type.py in get_device_type()
+     44     if hasattr(torch, "accelerator"):
+     45         if not torch.accelerator.is_available():
+---> 46             raise NotImplementedError("Unsloth cannot find any torch accelerator? You need a GPU.")
+     47         accelerator = str(torch.accelerator.current_accelerator())
+     48         if accelerator in ("cuda", "xpu", "hip"):
+
+NotImplementedError: Unsloth cannot find any torch accelerator? You need a GPU.
