@@ -1,0 +1,113 @@
+# ==============================
+# MyStyleGemma Full Training Notebook
+# ==============================
+# Remove any existing torch installs
+!pip uninstall -y torch torchvision torchaudio
+
+# Install PyTorch 2.8.0 with CUDA 12.1 (compatible with Unsloth)
+!pip install torch==2.8.0 torchvision==0.19.0 torchaudio==2.8.0 --index-url https://download.pytorch.org/whl/cu121
+
+!pip install unsloth transformers datasets accelerate gradio
+!pip install torch==2.8.0 torchaudio==2.8.0 torchvision==0.19.0 --quiet
+
+# Step 1: Install required libraries
+!pip install transformers datasets accelerate unsloth gradio --quiet
+
+# Step 2: Import libraries
+from datasets import Dataset
+from unsloth import FastLanguageModel
+import gradio as gr
+
+# Step 3: Prepare your writing samples
+text_samples = [
+"""
+### HUMAN WRITING SAMPLE ###
+Prisoner B-3087
+A book talk by Mia Burdette
+
+Have you ever heard about the holocaust, when Germany decided to kill millions and millions of jews seemingly for no reason? I'm sure you have, it was a massive issue during WWII, but have you ever heard of books written based off of the holocaust? I bet you have also, but that's what I'm going to talk about. My book was Prisoner B-3087. Now the holocaust was a truly terrible event, nothing about it was good. The only “real” reason the Nazis killed Jews was because they had a different view on life then Hitler did, but that's not even a real reason! But it's also good to know the Jews weren't the only ones being killed during the holocaust. People with disabilities, Jehovah's witnesses, political opponents, Spanish republicans, Slavic people, Soviet civilians, and even black men and women, and more were all killed during the holocaust.
+
+One very important quote from Prisoner B-3087 is “I am alive.”. This quote recurs throughout the middle and end of the book and is said by the main character “Yanek Gruener”. This quote is very significant because it gives Yanek inspiration to just push through because the allies were coming soon to save him. It reveals lots of determination and resilience from Yanek to stay hard working. Through Yanek's doubts and troubles, he pushes through and even helps others by simply making sure he was, in fact, alive. I think this quote is very important because it shows the inspiration from Yanek to not just give up and become a musselman even when he was close to becoming one. By simply saying the quote “I am alive.” reminded Yanek why he was still here, surviving, pushing through his pains, his hunger, and the camps in general. This quote also reveals one of the main points of the book, survival. Throughout the book, Yanek is reminded by his Uncle Mosh to survive, not care about anything else but himself, but when Uncle Mosh unfortunately dies, Yanek is left to survive on his own in the camps. I think that Yanek telling himself he was alive was like a coping mechanism. This also reminds the reader of how intense the work at the camps were, almost forcing Yanek to find a way to make sure he was alive because if he had made it this far, the Allies would come and save him sooner or later. This theme is also very important because it simply shows how important it is to live and survive, especially with the little materials the Jews had.
+
+I really enjoyed reading Prisoner B-3087, I think it was a great book and really captured the life of someone who survived the holocaust. I would recommend this book to anyone interested in historical fiction, WWII, or just the holocaust. Now the book was very gory and violent so I wouldn't let any of my kids read it till they were at least twelve or thirteen, or in 7th grade or higher. The violence of the Nazis, the murdering of millions, and even the mention of suicide makes this book for a mature audience, not for young kids. Despite the theme of the book, most of the vocabulary and reading is smooth and easy, not requiring much effort making it a great choice for mature readers.
+### END SAMPLE ###
+""",
+"""
+### HUMAN WRITING SAMPLE ###
+The purpose of Yule Lads is to punish or reward young children based on their behavior 13 days before Christmas.
+
+Yule Lads is a popular tradition celebrated because of an old Icelandic folklore, 13 yule lads,(also known as trolls), pranked kids with bad behavior by giving them a raw or rotten potato and gifting kids with good behavior small gifts or candy.
+
+What stands out to me the most about the Yule Lads tradition is gifting bad kids with raw and rotten potatoes because that's really funny and interesting.
+
+Anyone is allowed to celebrate Yule Lads but is primarily celebrated by Icelandic families because of where the tradition started.
+
+In order to celebrate Yule Lads, kids would put their shoes in their window for the 13 nights leading up to Christmas. Each night, a “Yule Lad” would come and put a gift or a prank in their shoes depending on how good or bad the child's behavior was that day.
+
+Yule Lads reflect Scandinavian culture, values, and history by taking traditions from a harsh fear-based past and transforming it into a fun celebratory tradition to reward kids.
+
+If Yule Lads were to be celebrated in schools instead of at your home, kids would most likely use a small decorated bag and leaving it at their desk. Instead of the Yule Lads leaving their tricks or treats in shoes, they would be left in their little bags that they would fill up every night when all the children left. Also, instead of using potatoes, either no gift or a little piece of paper saying “you were bad! No gift for you!” could be left in the bag instead.
+
+If Yule Lads were to be celebrated in a place like America, I feel like it would be pretty popular, just like elf on the shelf. It would be a fun way to encourage good behavior for kids while keeping Christmas magic alive! I would only want to do this tradition if I were younger, or had younger siblings to celebrate with.
+### END SAMPLE ###
+""",
+"""
+### HUMAN WRITING SAMPLE ###
+I agree with the color scheme on this logo because the subway is a sub shop and the color contrast looks great. The green makes the subway feel healthier and the yellow brings a sense of good warmth and they contrast really well.
+I don't really like the color scheme in Taco Bell's logo because it gives a very retro 90’s vibe even though their food isn't very retro or 90’s and it's just fast food text-mex. The purple makes me feel like I could almost create my own taco, but they don't have that option on the menu, but the contrast in the bell with the yellow makes it look really good. The color scheme overall is good but I don't think it relates well to the actual food.
+I really like this logo. You really can't go wrong with blue and it gives a sense of safety and reliability while the yellow brings clarity and welcoming. Honestly they couldn't go wrong with this logo with the design too, the colors and design just go so well together. 
+I don't like this logo as much as the others. There isn't a lot going on, not much color and it's very simple compared to the potential they had with this. There could have been much more color but the orange does feel kid-friendly and cheerful. The vibes are there but the execution of the actual logo isn't.
+This logo might be my favorite of all time. The font, design, colors, all perfect. The red creates a bold outstanding feeling that makes it stand out from other sodas while the font and the story behind it really brings it all together. With the bold red and the creativity of the font creates a loud “PICK ME” feeling. The drink is also really good.
+The Monster logo isn't one of my favorites. I really can't tell what the logo is supposed to be and the green just makes it loud. I think Monsters could have done better with the colors, especially with the flavors that they’ve created, but the original just isn't what I “hoped for”.
+The NASA logo is honestly perfection. The logo relates to the company and the color scheme is amazing. With the space theme, I don't think it would look as good if they chose any other color than blue. The red creates the perfect contrast with the vector and the way it's placed around “NASA” is great. The white also makes NASA stand out with all the dark colors around it.
+The logo is amazing. AC/DC is a great band and their logo matches their music perfectly. With the bright bold red and the black contrast in the back just creates a great vibe all-around. The small yellow outline around the letters and lightning bolt really adds a lot to this logo too.
+The Honda logo is mid. It's not outstanding, and not boring. The grey was a great choice because it doesn't make Honda bold or boring. Honda has a reputation of making safe reliable cars, so picking grey really brings the reliability out. This isn't my favorite logo, but it's also not the worst.
+The F1 logo is great. I'm a big F1 fan so I'm a little biased, but the red makes F1 bold and loud, like the cars are, and the simplicity of just one color makes it stand out. The slant in “F1” also makes it feel fast, especially with the red. Overall the red makes a great feeling of standing out, having confidence and being bold, which is also needed to drive/race a Formula One car.
+### END SAMPLE ###
+"""
+]
+
+# Step 4: Create the dataset
+dataset = Dataset.from_dict({"text": text_samples})
+
+# Step 5: Load Gemma 2B model
+model = FastLanguageModel.from_pretrained(
+    "google/gemma-2-2b-it",
+    load_in_4bit=True,
+    device=device
+)
+
+# Step 6: Apply LoRA fine-tuning
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    lora_alpha=16,
+    lora_dropout=0.1
+)
+
+# Step 7: Train the model on your samples
+model.train_model(
+    dataset,
+    text_field="text",
+    batch_size=1,
+    epochs=2
+)
+
+# Step 8: Save the fine-tuned model to HuggingFace
+model.push_to_hub("mia-bb55/MyStyleGemma")
+
+# ==============================
+# Step 9: Launch Interactive Gradio Box
+# ==============================
+def generate_text(prompt):
+    return model.generate(prompt, max_length=400)
+
+iface = gr.Interface(
+    fn=generate_text,
+    inputs="text",
+    outputs="text",
+    title="MyStyleGemma Writing Assistant",
+    description="Type a prompt and see the model write in your style!"
+)
+
+iface.launch()
