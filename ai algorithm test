@@ -1,0 +1,48 @@
+!pip install transformers datasets accelerate unsloth --quiet
+
+
+from datasets import Dataset
+from unsloth import FastLanguageModel
+
+
+text_samples = [
+"""
+### HUMAN WRITING SAMPLE ###
+Prisoner B-3087
+A book talk by Mia Burdette
+
+Have you ever heard about the holocaust, when Germany decided to kill millions and millions of jews seemingly for no reason? I'm sure you have, it was a massive issue during WWII, but have you ever heard of books written based off of the holocaust? I bet you have also, but that's what I'm going to talk about. My book was Prisoner B-3087. Now the holocaust was a truly terrible event, nothing about it was good. The only “real” reason the Nazis killed Jews was because they had a different view on life then Hitler did, but that's not even a real reason! But it's also good to know the Jews weren't the only ones being killed during the holocaust. People with disabilities, Jehovah's witnesses, political opponents, Spanish republicans, Slavic people, Soviet civilians, and even black men and women, and more were all killed during the holocaust.
+
+One very important quote from Prisoner B-3087 is “I am alive.”. This quote recurs throughout the middle and end of the book and is said by the main character “Yanek Gruener”. This quote is very significant because it gives Yanek inspiration to just push through because the allies were coming soon to save him. It reveals lots of determination and resilience from Yanek to stay hard working. Through Yanek's doubts and troubles, he pushes through and even helps others by simply making sure he was, in fact, alive. I think this quote is very important because it shows the inspiration from Yanek to not just give up and become a musselman even when he was close to becoming one. By simply saying the quote “I am alive.” reminded Yanek why he was still here, surviving, pushing through his pains, his hunger, and the camps in general. This quote also reveals one of the main points of the book, survival. Throughout the book, Yanek is reminded by his Uncle Mosh to survive, not care about anything else but himself, but when Uncle Mosh unfortunately dies, Yanek is left to survive on his own in the camps. I think that Yanek telling himself he was alive was like a coping mechanism. This also reminds the reader of how intense the work at the camps were, almost forcing Yanek to find a way to make sure he was alive because if he had made it this far, the Allies would come and save him sooner or later. This theme is also very important because it simply shows how important it is to live and survive, especially with the little materials the Jews had.
+
+I really enjoyed reading Prisoner B-3087, I think it was a great book and really captured the life of someone who survived the holocaust. I would recommend this book to anyone interested in historical fiction, WWII, or just the holocaust. Now the book was very gory and violent so I wouldn't let any of my kids read it till they were at least twelve or thirteen, or in 7th grade or higher. The violence of the Nazis, the murdering of millions, and even the mention of suicide makes this book for a mature audience, not for young kids. Despite the theme of the book, most of the vocabulary and reading is smooth and easy, not requiring much effort making it a great choice for mature readers.
+### END SAMPLE ###
+"""
+]
+
+dataset = Dataset.from_dict({"text": text_samples})
+
+
+model = FastLanguageModel.from_pretrained(
+    "google/gemma-2b",
+    load_in_4bit=True
+)
+
+
+model = FastLanguageModel.get_peft_model(
+    model,
+    r=16,
+    lora_alpha=16,
+    lora_dropout=0.1
+)
+
+
+model.train_model(
+    dataset,
+    text_field="text",
+    batch_size=1,
+    epochs=2
+)
+
+
+model.push_to_hub("mia-bb55/MyStyleGemma")
